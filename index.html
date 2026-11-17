@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI VEIKIA — svetainės ir automatizacija smulkiam verslui</title>
+<meta name="description" content="Kuriu greitas svetaines ir automatizuoju kasdienius verslo darbus. Elektrėnai, dirbu su klientais visoje Lietuvoje.">
+<meta property="og:title" content="AI VEIKIA">
+<meta property="og:description" content="Svetainės ir automatizacija smulkiam verslui.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='%2316a34a'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --bg: #faf7f2;
+    --bg2: #f2ece2;
+    --ink: #1a1714;
+    --soft: #6b6157;
+    --line: #e2d9cc;
+    --accent: #16803c;
+    --accent-soft: #e6f2ea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #14120f;
+      --bg2: #1c1915;
+      --ink: #f6f1e8;
+      --soft: #a89d90;
+      --line: #2e2922;
+      --accent: #4ade80;
+      --accent-soft: #19271d;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #14120f; --bg2: #1c1915; --ink: #f6f1e8; --soft: #a89d90;
+    --line: #2e2922; --accent: #4ade80; --accent-soft: #19271d;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100svh; background: var(--bg); color: var(--ink);
+    font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+    display: flex; flex-direction: column;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background: radial-gradient(60rem 36rem at 72% -10%, var(--bg2), transparent 70%);
+  }
+  .wrap {
+    position: relative; z-index: 1; width: 100%; max-width: 64rem;
+    margin: 0 auto; padding: 2.5rem 16px 3rem; flex: 1;
+    display: flex; flex-direction: column;
+  }
+
+  /* Ženklas su „veikia" lempute */
+  .brand { display: flex; align-items: center; gap: .6rem; font-weight: 700; letter-spacing: .14em; font-size: .82rem; }
+  .dot { width: .6rem; height: .6rem; border-radius: 50%; background: var(--accent); position: relative; flex: none; }
+  .dot::after {
+    content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--accent);
+    animation: pulse 2.6s ease-out infinite;
+  }
+  @keyframes pulse { 0% { transform: scale(1); opacity: .55; } 70%, 100% { transform: scale(3.2); opacity: 0; } }
+  @media (prefers-reduced-motion: reduce) { .dot::after { animation: none; } }
+
+  main { margin: auto 0; padding: 4rem 0 3rem; }
+  h1 {
+    font-size: clamp(2.3rem, 7.2vw, 4.4rem); line-height: 1.04; letter-spacing: -.035em;
+    font-weight: 700; margin: 0 0 1.4rem; max-width: 17ch;
+  }
+  h1 em { font-style: normal; color: var(--accent); }
+  .lead { font-size: clamp(1.05rem, 2.4vw, 1.3rem); color: var(--soft); max-width: 46ch; margin: 0; }
+
+  ul.srv { list-style: none; display: grid; gap: 1px; margin: 3.5rem 0 0; padding: 0; background: var(--line); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  @media (min-width: 46rem) { ul.srv { grid-template-columns: repeat(3, 1fr); } }
+  ul.srv li { background: var(--bg); padding: 1.5rem 0; }
+  @media (min-width: 46rem) { ul.srv li { padding: 1.6rem 1.6rem 1.6rem 0; } ul.srv li + li { padding-left: 1.6rem; } }
+  ul.srv b { display: block; font-size: 1.02rem; margin-bottom: .3rem; }
+  ul.srv span { color: var(--soft); font-size: .95rem; }
+
+  footer { position: relative; z-index: 1; border-top: 1px solid var(--line); }
+  .foot {
+    max-width: 64rem; margin: 0 auto; padding: 1.6rem 16px 2.2rem;
+    display: flex; flex-wrap: wrap; gap: .6rem 1.6rem; align-items: baseline;
+    color: var(--soft); font-size: .92rem;
+  }
+  .foot .status { display: inline-flex; align-items: center; gap: .5rem; color: var(--ink); font-weight: 600; }
+  .foot a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--accent); padding-bottom: 1px; }
+  .foot a:hover { color: var(--accent); }
+  .foot .sp { margin-left: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand"><span class="dot"></span>AI VEIKIA</div>
+
+  <main>
+    <h1>Svetainės ir automatizacija <em>smulkiam verslui</em>.</h1>
+    <p class="lead">Sukuriu greitą, tvarkingą svetainę ir perduodu robotui tuos darbus, kuriuos šiandien darote ranka.</p>
+
+    <ul class="srv">
+      <li><b>Svetainės</b><span>Nuo vieno puslapio iki kelių skyrių. Greitos, tvarkingos telefone, tekstus galite keisti patys.</span></li>
+      <li><b>Automatizacija</b><span>Užklausos, lentelės, laiškai ir priminimai susijungia tarpusavyje ir veikia be jūsų.</span></li>
+      <li><b>AI sprendimai</b><span>Nedideli įrankiai kasdieniams darbams: turinys, atsakymai klientams, duomenų tvarkymas.</span></li>
+    </ul>
+  </main>
+</div>
+
+<footer>
+  <div class="foot">
+    <span class="status"><span class="dot"></span>Puslapis ruošiamas</span>
+    <!-- Vietoj TAVO@PASTAS.LT įrašyk savo el. paštą, tada ši eilutė taps veikiančia nuoroda. -->
+    <span>Darbų pavyzdžiai netrukus. Rašykite: <a href="mailto:TAVO@PASTAS.LT">TAVO@PASTAS.LT</a></span>
+    <span class="sp">Elektrėnai, Lietuva</span>
+  </div>
+</footer>
+</body>
+</html>
