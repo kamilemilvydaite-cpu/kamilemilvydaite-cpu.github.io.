@@ -12,11 +12,22 @@
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
   /* ---------- Mastelis ---------- */
-  function fit() {
-    const s = Math.min(innerWidth / W, innerHeight / H);
+  function fit() {                // pagal matomą ekrano dalį (visualViewport), kad padidinus naršyklėje scena neišlįstų už krašto
+    const v = window.visualViewport;
+    const w = v ? v.width : innerWidth, h = v ? v.height : innerHeight;
+    const s = Math.min(w / W, h / H);
+    stage.style.left = ((v ? v.pageLeft : 0) + w / 2) + "px";
+    stage.style.top = ((v ? v.pageTop : 0) + h / 2) + "px";
     stage.style.transform = `translate(-50%, -50%) scale(${s})`;
   }
-  addEventListener("resize", fit); fit();
+  addEventListener("resize", fit);
+  if (window.visualViewport) { visualViewport.addEventListener("resize", fit); visualViewport.addEventListener("scroll", fit); }
+  fit();
+  // Pirmas palietimas bet kur įjungia viso ekrano režimą (išjungti galima mygtuku ⛶)
+  document.addEventListener("pointerdown", (e) => {
+    if (e.target.id === "fs" || document.fullscreenElement || !document.documentElement.requestFullscreen) return;
+    document.documentElement.requestFullscreen().catch(() => {});
+  }, { once: true, capture: true });
   document.addEventListener("contextmenu", (e) => e.preventDefault());
 
   /* ---------- Laikini piešiniai (kol nėra tikrų paveikslėlių) ---------- */
