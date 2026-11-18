@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Balto katino žiemos pasaka</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="stage">
+  <div id="bg"></div>
+  <div id="world"></div>
+  <canvas id="snow" width="1920" height="1080"></canvas>
+  <div id="bubble" hidden></div>
+  <button id="fs" aria-label="Visas ekranas">⛶</button>
+  <div id="testbar" hidden>
+    <span>Bandymas: gruodžio</span>
+    <button id="tminus">−</button><b id="tday">1</b><button id="tplus">+</button>
+    <span>d.</span>
+    <button id="treset">Uždaryti visas dureles</button>
+  </div>
+  <div id="film" hidden>
+    <div id="filmbox">
+      <video id="filmvideo" controls playsinline></video>
+      <p id="filmmsg" hidden>Filmukas dar neįkeltas.</p>
+      <button id="filmclose">✕</button>
+    </div>
+  </div>
+</div>
+<script src="content.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
