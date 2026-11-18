@@ -203,3 +203,7 @@ html, body {
 .elf.sheet .inner > img { visibility: hidden; }
 .elf.sheet.walking .inner, .elf.sheet.talking .inner { animation: none; }
 @keyframes espr { from { background-position: 0 0; } to { background-position: 100% 0; } }
+
+/* Lengvas režimas (?lengvas): be šešėlių, šviesos dėmių ir filtrų */
+.lengvas .gshadow, .lengvas .pool { display: none !important; }
+.lengvas .shadow { filter: none; }

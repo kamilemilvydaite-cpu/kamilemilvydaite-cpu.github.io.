@@ -2,7 +2,7 @@
 window.KALENDORIUS = {
   // Jei įrašysi paskelbtos Google Sheets lentelės CSV nuorodą, užduotys bus imamos iš jos
   // (stulpeliai: diena, užduotis). Kol tuščia, naudojamos žemiau surašytos.
-  sheetCsvUrl: "",
+  sheetCsvUrl: "https://docs.google.com/spreadsheets/d/1fXXPUDamxbv4fADC6F0MEe14R8JXvpNuFVK3__bELxE/gviz/tq?tqx=out:csv",
 
   // Nuo kurios gruodžio dienos veikia pasakos žibintas.
   filmasNuoDienos: 1,

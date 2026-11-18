@@ -387,6 +387,8 @@
   /* ---------- Diena ---------- */
   const params = new URLSearchParams(location.search);
   let testDay = parseInt(params.get("diena"), 10) || null;
+  const LITE = params.has("lengvas");                 // ?lengvas: lengvesnė versija silpnam įrenginiui
+  if (LITE) document.body.classList.add("lengvas");
   function today() {
     if (testDay) return Math.max(1, Math.min(24, testDay));
     const d = new Date();
@@ -525,7 +527,7 @@
   /* ---------- Sniegas ---------- */
   function snow() {
     const cv = $("snow"), g = cv.getContext("2d");
-    const flakes = Array.from({ length: 90 }, () => ({ x: Math.random() * W, y: Math.random() * H, r: 1.5 + Math.random() * 3.5, v: 25 + Math.random() * 55, p: Math.random() * 6.28 }));
+    const flakes = Array.from({ length: LITE ? 30 : 90 }, () => ({ x: Math.random() * W, y: Math.random() * H, r: 1.5 + Math.random() * 3.5, v: 25 + Math.random() * 55, p: Math.random() * 6.28 }));
     let last = performance.now();
     (function tick(t) {
       const dt = Math.min(60, t - last) / 1000; last = t;
