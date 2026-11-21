@@ -192,6 +192,16 @@ html, body {
 .rig.sprite { background-repeat: no-repeat; background-size: 1800% 100%; background-position: 0 0; }
 .cat.walking .rig.sprite { animation: spr 1.2s steps(18, jump-none) infinite; }
 @keyframes spr { from { background-position: 0 0; } to { background-position: 100% 0; } }
+/* Eisenos viena ant kitos (šonas, įstrižai, priekis, nugara), keičiasi švelniu perėjimu: nauja išryškėja, senoji išnyksta po jos.
+   Veidrodis tik šonui ir įstrižoms. Įstrižų kadras platesnis (396 vietoj 330), todėl sluoksnis 20 % platesnis. */
+.rig.views .sprite { position: absolute; inset: 0; background-repeat: no-repeat; background-size: 1800% 100%; background-position: 0 0; opacity: 0; transition: opacity .1s .16s, transform 0s .08s; }
+.rig.views .s-dfront, .rig.views .s-dback { left: -10%; right: -10%; }
+.cat.walking .rig.views .sprite { animation: spr 1.2s steps(18, jump-none) infinite; }
+.rig.views .s-side { opacity: 1; transition: opacity .16s, transform 0s .08s; }
+.cat.v-front .rig.views .s-side, .cat.v-back .rig.views .s-side, .cat.v-dfront .rig.views .s-side, .cat.v-dback .rig.views .s-side { opacity: 0; transition: opacity .1s .16s, transform 0s .08s; }
+.cat.v-front .rig.views .s-front, .cat.v-back .rig.views .s-back, .cat.v-dfront .rig.views .s-dfront, .cat.v-dback .rig.views .s-dback { opacity: 1; transition: opacity .16s, transform 0s .08s; z-index: 1; }
+.cat.vw.rig-on.left .flip { transform: none; }
+.cat.vw.left .rig.views .s-side, .cat.vw.left .rig.views .s-dfront, .cat.vw.left .rig.views .s-dback { transform: scaleX(-1); }
 
 /* Elfo kadrų juostos iš vaizdo įrašų (eisena ir kalbėjimas) */
 .elf .inner { position: relative; }
@@ -207,3 +217,43 @@ html, body {
 /* Lengvas režimas (?lengvas): be šešėlių, šviesos dėmių ir filtrų */
 .lengvas .gshadow, .lengvas .pool { display: none !important; }
 .lengvas .shadow { filter: none; }
+
+/* Namelio vidus (roomScene faile app.js) */
+#room { position: absolute; inset: 0; z-index: 5500; background-size: cover; background-position: center; opacity: 0; transition: opacity .8s; overflow: hidden; }
+#room.in { opacity: 1; }
+#room[hidden] { display: none; }
+#bg, #world { will-change: transform; }
+#room .fire {
+  position: absolute; left: 1350px; top: 640px; width: 420px; height: 360px; margin: -180px 0 0 -210px; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255,190,90,.55), rgba(255,140,40,.18) 60%, rgba(255,140,40,0));
+  mix-blend-mode: screen; animation: fire 1.7s infinite alternate ease-in-out;
+}
+@keyframes fire { 0% { opacity: .55; transform: scale(1); } 35% { opacity: .9; transform: scale(1.04); } 60% { opacity: .65; } 100% { opacity: 1; transform: scale(1.06, 1.02); } }
+.lengvas #room .fire { mix-blend-mode: normal; animation: none; opacity: .6; }
+#room .relf, #room .rcat { position: absolute; transform: translate(-50%, -100%); }
+#room .relf { width: 88px; }
+#room .relf img, #room .rcat img { display: block; width: 100%; height: auto; pointer-events: none; }
+#room .relf .flip { transform-origin: 50% 100%; }
+.rcat .inner { position: relative; transform-origin: 50% 100%; }
+.rcat .rig.sprite { display: block; position: relative; width: 100%; aspect-ratio: 1100 / 935; }
+.rcat.walking .rig.sprite { animation: spr 1.2s steps(18, jump-none) infinite; }
+.rcat .sitimg { display: none; position: absolute; left: 0; top: 0; width: 100%; }
+.rcat.sitting .sitimg { display: block; }
+.rcat.sitting .rig, .rcat.sitting .walkimg { visibility: hidden; }
+.rcat.left .flip { transform: scaleX(-1); }
+.rcat.crouch .inner { transform: scale(1.06, .88); transition: transform .2s; }
+.rcat.jump .inner { transform: rotate(-8deg); }
+.rcat.sitting .shadow { display: none; }
+#roomvid1, #roomvid2 { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
+#room.video #roomvid1 { display: block; }
+#room.video #roomvid2 { display: block; opacity: 0; }
+#room.video #roomvid2.show { opacity: 1; }
+#room.video .fire { display: none; }
+
+/* Atsisėdimas (12 kadrų, vieną kartą) ir kalbėjimas sėdint (18 kadrų, pirmyn-atgal), iš Flow klipo */
+.rig.views .s-sit { background-size: 1200% 100%; background-position: 100% 0; }
+.rig.views .s-talk { background-size: 1800% 100%; }
+.cat.sitting .rig.views .sprite { opacity: 0; transition: none; transform: none; }
+.cat.sitting .rig.views .s-sit { opacity: 1; animation: spr .55s steps(12, jump-none) 1 both; }
+.cat.sitting.talking .rig.views .s-sit { opacity: 0; }
+.cat.sitting.talking .rig.views .s-talk { opacity: 1; animation: spr 1.5s steps(18, jump-none) infinite alternate; }

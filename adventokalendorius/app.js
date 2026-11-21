@@ -120,8 +120,8 @@
     ...[1, 2, 3].map((f) => load(`elfas-berniukas-${f}`, phElf(false, f))),
     ...[1, 2, 3].map((f) => load(`elfas-mergaite-${f}`, phElf(true, f))),
     ...["elfas-berniukas", "elfas-mergaite"].flatMap((b) => [load(b + "-eina", null), load(b + "-kalba", null)]),
-    load("katinas-eina", null), load("katinas-eisena", null), load("katinas-kalba", null), load("katinas-moja", null),
-    load("katinas-sedi-1", null), load("katinas-sedi-2", null),
+    load("katinas-eina", null), load("katinas-eisena", null), load("katinas-eina-priekis", null), load("katinas-eina-nugara", null), load("katinas-eina-istrizai-priekis", null), load("katinas-eina-istrizai-nugara", null), load("namelio-vidus", null), load("namelio-vidus-video", null), load("katinas-kalba", null), load("katinas-moja", null),
+    load("katinas-sedi-1", null), load("katinas-sedi-2", null), load("katinas-atsisedimas", null), load("katinas-kalba-sedi", null),
     ...RIG_PARTS.map((p) => load("katinas/" + p[0], null))
   ];
 
@@ -299,7 +299,17 @@
 
     cat = obj("cat", ORBIT.x + ORBIT.rx, ORBIT.y, CAT.walk);
     cat.querySelector(".inner").insertAdjacentHTML("afterbegin", `<div class="shadow"></div>`);
-    if (IMG["katinas-eisena"]) {                  // eisena iš vaizdo įrašo kadrų (18 kadrų juosta)
+    if (IMG["katinas-eisena"] && IMG["katinas-eina-priekis"] && IMG["katinas-eina-nugara"]) {
+      // trys eisenos (šonas, priekis, nugara) viena ant kitos; matoma tik viena, keičiasi su švelniu perėjimu
+      const lay = (cls, n) => IMG[n] ? `<div class="sprite ${cls}" style="background-image:url('${IMG[n]}')"></div>` : "";
+      cat.querySelector(".inner").insertAdjacentHTML("beforeend", `<div class="rig views">${lay("s-side", "katinas-eisena")}${lay("s-dfront", "katinas-eina-istrizai-priekis")}${lay("s-dback", "katinas-eina-istrizai-nugara")}${lay("s-front", "katinas-eina-priekis")}${lay("s-back", "katinas-eina-nugara")}${lay("s-sit", "katinas-atsisedimas")}${lay("s-talk", "katinas-kalba-sedi")}</div>`);
+      CAT.sitSprite = !!(IMG["katinas-atsisedimas"] && IMG["katinas-kalba-sedi"]);   // atsisėdimas ir kalbėjimas iš Flow klipo
+      // pozos ir jų ėjimo kampas ekrane (0 = į šoną, 90 = žemyn į žiūrovą, -90 = aukštyn nuo žiūrovo)
+      CAT.angles = { side: 0, front: 90, back: -90 };
+      if (IMG["katinas-eina-istrizai-priekis"]) CAT.angles.dfront = 45;
+      if (IMG["katinas-eina-istrizai-nugara"]) CAT.angles.dback = -45;
+      cat.classList.add("vw"); CAT.rig = true; CAT.views = true;
+    } else if (IMG["katinas-eisena"]) {                  // eisena iš vaizdo įrašo kadrų (18 kadrų juosta)
       cat.querySelector(".inner").insertAdjacentHTML("beforeend", `<div class="rig sprite" style="background-image:url('${IMG["katinas-eisena"]}')"></div>`);
       CAT.rig = true;
     } else if (RIG_PARTS.every((p) => IMG["katinas/" + p[0]])) {
@@ -312,6 +322,12 @@
     }
     cat.addEventListener("pointerdown", (e) => { e.stopPropagation(); catAnnounce(); });
 
+    $("room").innerHTML = `<video id="roomvid1" playsinline preload="auto"></video><video id="roomvid2" playsinline preload="auto"></video><div class="fire"></div>
+      <div id="rcat" class="rcat"><div class="flip"><div class="inner"><div class="shadow"></div>
+        ${IMG["katinas-eisena"] ? `<div class="rig sprite" style="background-image:url('${IMG["katinas-eisena"]}')"></div>` : `<img class="walkimg" src="${CAT.walk}" alt="">`}
+        <img class="sitimg" src="${CAT.sit[0]}" alt=""></div></div></div>
+      <div id="relf" class="elf relf"><div class="flip"><div class="inner"><img alt=""><div class="esprite"></div></div></div></div>`;
+    $("rcat").style.width = ROOM.catW + "px";
     elf = obj("elf", 0, 0, "");
     elf.querySelector(".inner").innerHTML = `<img alt=""><div class="esprite"></div>`;
     elf.querySelector(".flip").style.transformOrigin = "50% 100%";
@@ -321,15 +337,51 @@
 
   /* ---------- Katino judėjimas ---------- */
   let orbiting = false, angle = 0, lastT = 0;
-  function setCat(src) { const im = cat.querySelector(".inner > img"); if (im.getAttribute("src") !== src) im.src = src; cat.classList.remove("rig-on"); }
-  function catWalkLook() { if (CAT.rig) cat.classList.add("rig-on"); else setCat(CAT.walk); }
-  function face(dx) { cat.classList.toggle("left", dx < 0); }
+  function setCat(src) { const im = cat.querySelector(".inner > img"); if (im.getAttribute("src") !== src) im.src = src; cat.classList.remove("rig-on"); viewNow = -1; viewT = 0; }
+  function catWalkLook() { cat.classList.remove("sitting"); if (CAT.rig) cat.classList.add("rig-on"); else setCat(CAT.walk); }
+  // Katinas atsisėda veidu į žiūrovą: atsisėdimo juosta suka vieną kartą (~0,55 s), paskui lieka paskutinis kadras
+  function catSit() {
+    cat.classList.remove("left");
+    if (!CAT.sitSprite) { setCat(CAT.sit[0]); return Promise.resolve(); }
+    if (cat.classList.contains("sitting")) return Promise.resolve();
+    cat.classList.remove("walking", "v-front", "v-back", "v-dfront", "v-dback");
+    cat.classList.add("rig-on", "sitting"); viewNow = -1; viewT = 0;
+    return sleep(600);
+  }
+  const ORBIT_DIR = -1;   // ėjimo aplink eglutę kryptis: -1 prieš laikrodžio rodyklę, 1 pagal
+  function face(dx) { if (!CAT.views) cat.classList.toggle("left", dx < 0); }
+  // Poza pagal ėjimo kryptį ekrane. 8 kryptys ratu (0° = į dešinę, 90° = žemyn į žiūrovą, 270° = aukštyn nuo žiūrovo);
+  // kairės pusės pozos yra veidrodinės dešiniųjų. Poza keičiasi tik į kaimyninę rate, todėl staigiame posūkyje
+  // katinas pereina per tarpines pozas. VIEW_MARGIN neleidžia mirgėti ties riba, VIEW_HOLD - per greitai keistis.
+  const VIEW_HOLD = 260, VIEW_MARGIN = 12; let viewNow = -1, viewT = 0;
+  const RING = [["side", 0], ["dfront", 0], ["front", 0], ["dfront", 1], ["side", 1], ["dback", 1], ["back", 0], ["dback", 0]];
+  function view(dx, dy) {
+    if (!CAT.views) return;
+    const ok = RING.map(([k]) => k in CAT.angles);
+    const phi = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360;
+    const dist = (r) => { const d = Math.abs(phi - r * 45) % 360; return Math.min(d, 360 - d); };
+    let best = -1;
+    for (let r = 0; r < 8; r++) if (ok[r] && (best < 0 || dist(r) < dist(best))) best = r;
+    if (viewNow >= 0 && best !== viewNow && dist(viewNow) < dist(best) + VIEW_MARGIN) best = viewNow;
+    let next = best;
+    if (viewNow >= 0 && best !== viewNow) {                      // žingsnis į kaimyninę pozą trumpesne kryptimi
+      const dir = ((best - viewNow + 8) % 8) <= 4 ? 1 : -1;
+      next = viewNow;
+      do next = (next + dir + 8) % 8; while (!ok[next] && next !== best);
+    }
+    const now = performance.now();
+    if (next === viewNow || (viewNow >= 0 && now - viewT < VIEW_HOLD)) return;
+    viewNow = next; viewT = now;
+    const [k, left] = RING[next];
+    ["front", "back", "dfront", "dback"].forEach((v) => cat.classList.toggle("v-" + v, k === v));
+    if (k !== "front" && k !== "back") cat.classList.toggle("left", !!left);
+  }
   function orbitTick(t) {
     if (!orbiting) return;
     const dt = Math.min(50, t - lastT); lastT = t;
-    angle += dt * 0.00045;
+    angle += ORBIT_DIR * dt * 0.00045;
     const x = ORBIT.x + Math.cos(angle) * ORBIT.rx, y = ORBIT.y + Math.sin(angle) * ORBIT.ry;
-    face(-Math.sin(angle)); place(cat, x, y);
+    face(-ORBIT_DIR * Math.sin(angle)); view(-ORBIT_DIR * Math.sin(angle) * ORBIT.rx, ORBIT_DIR * Math.cos(angle) * ORBIT.ry); place(cat, x, y);
     requestAnimationFrame(orbitTick);
   }
   function startOrbit() { orbiting = true; catWalkLook(); cat.classList.add("walking"); lastT = performance.now(); requestAnimationFrame(orbitTick); }
@@ -338,6 +390,7 @@
     return new Promise((res) => {
       const x0 = cat._x, y0 = cat._y, dist = Math.hypot(x - x0, y - y0), dur = Math.max(1, dist / speed * 1000), t0 = performance.now();
       if (Math.abs(x - x0) > 6) face(x - x0);
+      if (dist > 2) view(x - x0, y - y0);
       (function step(t) {
         const k = Math.min(1, (t - t0) / dur);
         place(cat, x0 + (x - x0) * k, y0 + (y - y0) * k);
@@ -345,15 +398,38 @@
       })(t0);
     });
   }
-  async function walkPath(pts) {
+  // Eina visu keliu vienu judesiu; kryptį (pozą) renkasi pagal tai, kur bus po LOOK taškų, todėl trumpi vingiai jos nekeičia
+  const LOOK = 70;
+  function walkPath(pts, speed = 300) {
     catWalkLook(); cat.classList.add("walking");
-    for (const p of pts) await move(p.x, p.y);
-    cat.classList.remove("walking");
+    const P = [{ x: cat._x, y: cat._y }, ...pts], cum = [0];
+    for (let i = 1; i < P.length; i++) cum.push(cum[i - 1] + Math.hypot(P[i].x - P[i - 1].x, P[i].y - P[i - 1].y));
+    const len = cum[cum.length - 1];
+    const at = (d) => {
+      d = Math.max(0, Math.min(len, d)); let i = 1;
+      while (i < P.length - 1 && cum[i] < d) i++;
+      const k = cum[i] > cum[i - 1] ? (d - cum[i - 1]) / (cum[i] - cum[i - 1]) : 1;
+      return { x: P[i - 1].x + (P[i].x - P[i - 1].x) * k, y: P[i - 1].y + (P[i].y - P[i - 1].y) * k };
+    };
+    return new Promise((res) => {
+      const t0 = performance.now();
+      (function step(t) {
+        const d = Math.min(len, (t - t0) / 1000 * speed), p = at(d), q = at(d + LOOK), dx = q.x - p.x, dy = q.y - p.y;
+        if (Math.hypot(dx, dy) > 5) { if (Math.abs(dx) > 3) face(dx); view(dx, dy); }
+        place(cat, p.x, p.y);
+        if (d < len) requestAnimationFrame(step); else { cat.classList.remove("walking"); res(); }
+      })(t0);
+    });
   }
   // Maršrutai: katinas eina tik ratu aplink eglutę ir kelių viduriu, ne kiaurai per objektus.
   let where = { type: "orbit" };
   const ell = (a) => ({ x: ORBIT.x + Math.cos(a) * ORBIT.rx, y: ORBIT.y + Math.sin(a) * ORBIT.ry });
-  const ang = (p) => Math.atan2((p.y - ORBIT.y) / ORBIT.ry, (p.x - ORBIT.x) / ORBIT.rx);
+  // Rato taškas, arčiausiai kelio pradžios p: iš jo katinas suka į kelią (nepraeina pro ir negrįžta atgal)
+  function ang(p) {
+    let best = 0, bd = Infinity;
+    for (let i = 0; i < 360; i++) { const a = i * Math.PI / 180, q = ell(a), d = Math.hypot(q.x - p.x, q.y - p.y); if (d < bd) { bd = d; best = a; } }
+    return best;
+  }
   const entry = (r) => ({ x: ROADS[r].pts[0][0], y: ROADS[r].pts[0][1] });
   function arc(a0, a1) {                          // taškai elipse trumpiausia kryptimi
     const d = ((a1 - a0 + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI;
@@ -430,17 +506,16 @@
     const t = today();
     sfx("miau");
     await goFront();
-    cat.classList.remove("left"); setCat(CAT.sit[0]);
+    await catSit();
     if (!t) {
-      await say(cat, FRONT.x, FRONT.y - 190, "Miau! Adventas prasidės gruodžio pirmą dieną!", "katinas-laukiam", CAT.sit);
+      await say(cat, FRONT.x, FRONT.y - 190, "Miau! Adventas prasidės gruodžio pirmą dieną!", "katinas-laukiam", CAT.sitSprite ? null : CAT.sit);
       await catHome(); busy = false; return;
     }
-    await say(cat, FRONT.x, FRONT.y - 190, `Miau! Šiandien gruodžio ${DAYWORD[t]} diena!`, `katinas-${pad(t)}`, CAT.sit);
+    await say(cat, FRONT.x, FRONT.y - 190, `Miau! Šiandien gruodžio ${DAYWORD[t]} diena!`, `katinas-${pad(t)}`, CAT.sitSprite ? null : CAT.sit);
     lightOnly(t); sfx("varpelis");
     await sleep(700);
     const s = SPOTS[t - 1];
-    await goHouse(s); cat.classList.remove('left');
-    setCat(CAT.sit[0]); catAt = t; cat.classList.add('waiting'); busy = false;
+    await goHouse(s); await catSit(); catAt = t; cat.classList.add('waiting'); busy = false;
   }
 
   // Kadrų juostos: vienas kadras yra 360x520, todėl kadrų skaičių atpažįstame iš failo pločio.
@@ -449,8 +524,8 @@
     const sz = IMGSIZE[name];
     return sz ? Math.max(1, Math.round(sz[0] / (sz[1] * SPR_ASPECT))) : 1;
   }
-  function elfShow(name, animate, ms) {          // animate: "pirmyn", "pirmyn-atgal" arba null (sustingęs kadras)
-    const d = elf.querySelector(".esprite"), n = sheetFrames(name);
+  function elfShow(name, animate, ms, who = elf) {   // animate: "pirmyn", "pirmyn-atgal" arba null (sustingęs kadras)
+    const d = who.querySelector(".esprite"), n = sheetFrames(name);
     d.style.backgroundImage = `url("${IMG[name]}")`;
     d.style.backgroundSize = `${n * 100}% 100%`;
     d.style.backgroundPosition = "0 0";
@@ -477,7 +552,7 @@
       sfx("uzrakinta"); h.classList.remove("locked-shake"); void h.offsetWidth; h.classList.add("locked-shake"); return;
     }
     busy = true;
-    if (catAt !== day) { lightOnly(day); await goHouse(s); cat.classList.remove("left"); setCat(CAT.sit[0]); catAt = day; cat.classList.add("waiting"); }
+    if (catAt !== day) { lightOnly(day); await goHouse(s); await catSit(); catAt = day; cat.classList.add("waiting"); }
 
     const girl = day % 2 === 0, base = girl ? "elfas-mergaite-" : "elfas-berniukas-";
     const F = [1, 2, 3].map((f) => IMG[base + f]);
@@ -490,6 +565,15 @@
 
     sfx("durys"); h.classList.add("open");
     await sleep(1500);                           // durys atsidaro lėtai
+    if (IMG["namelio-vidus"]) {                  // įeiname į namelį: užduotį elfas pasako viduje
+      await roomScene(day, base, juosta, F, doorX, doorY);
+      h.classList.remove("open");
+      await sleep(1200);
+      if (!opened.includes(day)) { opened.push(day); saveOpened(); }
+      lightOnly(0); catAt = 0; cat.classList.remove("waiting"); refresh();
+      await catHome();
+      busy = false; return;
+    }
     eimg.src = F[0]; elf._zmin = Math.round(h._y) + 1; elf._k = small;
     elf.classList.toggle("sheet", !!juosta);
     if (juosta) elfShow(base + "kalba", null);
@@ -519,6 +603,103 @@
     lightOnly(0); catAt = 0; cat.classList.remove("waiting"); refresh();
     await catHome();
     busy = false;
+  }
+
+  /* ---------- Namelio vidus ---------- */
+  // Kambario taškai (scenos 1920x1080 koordinatės pagal namelio-vidus.webp)
+  const ROOM = {
+    elfIn: { x: 2040, y: 930 }, elf: { x: 1300, y: 890 }, elfK: 2.8,     // elfas įeina iš dešinės ir stovi ant kilimo
+    catIn: { x: 2080, y: 900 }, catFloor: { x: 965, y: 845 },            // katinas ateina prie fotelio
+    catSeat: { x: 992, y: 718 }, catW: 260,                                 // ir užšoka ant sėdynės
+    vElf: { x: 1390, y: 905 }, vElfK: 2.35,                                 // elfo vieta, kai rodomi Flow klipai (kitas kambario kadras)
+    clip2From: 0.9, clip2To: 3.0,                                           // 2 klipas: iki 0,9 s katinas susigūžęs ir mažesnis, todėl praleidžiame; baigiame ties 3 s
+  };
+  function roomPlace(el, x, y) { el.style.left = x + "px"; el.style.top = y + "px"; el._x = x; el._y = y; }
+  function roomMove(el, x, y, dur) {
+    return new Promise((res) => {
+      const x0 = el._x, y0 = el._y, t0 = performance.now();
+      (function step(t) {
+        const q = Math.min(1, (t - t0) / dur);
+        roomPlace(el, x0 + (x - x0) * q, y0 + (y - y0) * q);
+        if (q < 1) requestAnimationFrame(step); else res();
+      })(t0);
+    });
+  }
+  function roomJump(el, x, y, h, dur) {          // šuolis lanku
+    return new Promise((res) => {
+      const x0 = el._x, y0 = el._y, t0 = performance.now();
+      (function step(t) {
+        const q = Math.min(1, (t - t0) / dur), e = q < .5 ? 2 * q * q : 1 - Math.pow(-2 * q + 2, 2) / 2;
+        roomPlace(el, x0 + (x - x0) * e, y0 + (y - y0) * e - Math.sin(Math.PI * q) * h);
+        if (q < 1) requestAnimationFrame(step); else res();
+      })(t0);
+    });
+  }
+  async function roomScene(day, base, juosta, F, doorX, doorY) {
+    const room = $("room"), re = $("relf"), rc = $("rcat"), zoom = [$("bg"), world];
+    room.style.backgroundImage = `url("${IMG["namelio-vidus"]}")`;
+    roomVideoReady().then((ok) => { if (ok && IMG["namelio-vidus-video"]) room.style.backgroundImage = `url("${IMG["namelio-vidus-video"]}")`; });
+    // 1. Priartėjame pro atviras duris
+    zoom.forEach((el) => { el.style.transformOrigin = `${doorX}px ${doorY}px`; el.style.transition = "transform 1.4s ease-in"; el.style.transform = "scale(7)"; });
+    await sleep(800);
+    // 2. Elfas jau stovi prie židinio.
+    const reimg = re.querySelector("img"); reimg.src = F[0];
+    re.classList.toggle("sheet", !!juosta);
+    if (juosta) elfShow(base + "kalba", null, 0, re);
+    const v1 = $("roomvid1"), v2 = $("roomvid2"), hasVid = await roomVideoReady();
+    const spot = hasVid ? ROOM.vElf : ROOM.elf, k = hasVid ? ROOM.vElfK : ROOM.elfK;
+    re.querySelector(".flip").style.transform = `scale(${k})`;
+    roomPlace(re, spot.x, spot.y);
+    room.classList.toggle("video", hasVid);
+    rc.hidden = hasVid; rc.classList.add("sitting"); roomPlace(rc, ROOM.catSeat.x, ROOM.catSeat.y);
+    if (hasVid) { v1.currentTime = 0; v2.currentTime = ROOM.clip2From; v1.hidden = false; v2.classList.remove("show"); }
+    room.hidden = false; void room.offsetWidth; room.classList.add("in");
+    re.classList.add("out");
+    await sleep(800);
+    $("snow").style.visibility = "hidden";
+    // 3. Sniegius ateina ir užšoka ant fotelio (1 klipas baigiasi katinu ant fotelio ir sustoja)
+    if (hasVid) await playClip(v1); else await sleep(600);
+    // 4. Elfas pasako užduotį
+    const text = `${CFG.elfoLabas} ${CFG.uzduotys[day] || ""} ${CFG.elfoAte}`;
+    if (juosta) elfShow(base + "kalba", "pirmyn-atgal", 2400, re);
+    await say(re, spot.x, spot.y - 171 * k - 30, text, `elfas-${pad(day)}`, juosta ? null : [F[0], F[1]]);
+    if (juosta) elfShow(base + "kalba", null, 0, re); else { reimg.src = F[2]; await sleep(1100); reimg.src = F[0]; }
+    await sleep(600);
+    // 5. Sniegius nušoka ir išeina; dar jam einant išskrendame į kaimelį
+    if (hasVid) {
+      if (Math.abs(v2.currentTime - ROOM.clip2From) > 0.1) v2.currentTime = ROOM.clip2From;
+      v2.classList.add("show");                  // tiesus kirpimas (cut) tarp klipų
+      await playClip(v2, 0, ROOM.clip2To);       // sustojame ties 3 s
+      v2.pause();
+    } else await sleep(600);
+    room.classList.remove("in"); $("snow").style.visibility = "";
+    zoom.forEach((el) => { el.style.transition = "transform 1.3s ease-out"; el.style.transform = ""; });
+    await sleep(1400);
+    room.hidden = true; re.classList.remove("out");
+    if (hasVid) { v1.pause(); v2.pause(); }
+  }
+  // Groja klipą su garsu (jei naršyklė neleidžia, be garso). early: kiek sekundžių prieš galą baigti laukti; until: ties kuria sekunde sustoti.
+  function playClip(v, early = 0, until = 0) {
+    return new Promise((res) => {
+      let done = false; const fin = () => { if (!done) { done = true; v.ontimeupdate = null; res(); } };
+      v.onended = fin;
+      if (early) v.ontimeupdate = () => { if (v.duration && v.currentTime >= v.duration - early) fin(); };
+      if (until) (function watch() { if (done) return; if (v.currentTime >= until) { v.pause(); fin(); } else requestAnimationFrame(watch); })();
+      v.muted = false;
+      v.play().catch(() => { v.muted = true; v.play().catch(fin); });
+      setTimeout(fin, 15000);
+    });
+  }
+  // Flow klipai: video/namelio-vidus-1.mp4 (ateina) ir -2.mp4 (išeina), arba šalia index.html
+  let roomVid = null;
+  function roomVideoReady() {
+    if (roomVid) return roomVid;
+    const tryLoad = (vid, name) => new Promise((res) => {
+      const go = (src, next) => { vid.onloadeddata = () => res(true); vid.onerror = () => next ? go(next, null) : res(false); vid.src = src; vid.load(); };
+      go("video/" + name, name); setTimeout(() => res(false), 5000);
+    });
+    roomVid = Promise.all([tryLoad($("roomvid1"), "namelio-vidus-1.mp4"), tryLoad($("roomvid2"), "namelio-vidus-2.mp4")]).then((r) => r[0] && r[1]);
+    return roomVid;
   }
 
   /* ---------- Pasakos žibintas ---------- */
