@@ -47,8 +47,8 @@ html, body {
   border-radius: 50%; pointer-events: none; opacity: 0; transition: opacity .6s;
   background: radial-gradient(circle, rgba(255,214,110,.95) 0, rgba(255,170,60,.45) 35%, rgba(255,170,60,0) 70%);
 }
-.lantern img { filter: brightness(.7) saturate(.6); transition: filter .6s; }
-.lantern.on img { filter: none; }
+.lantern img { opacity: .8; transition: opacity .6s; }   /* be filtrų: telefonui ir lentai lengviau */
+.lantern.on img { opacity: 1; }
 .lantern.on .glow { opacity: 1; animation: flicker 1.2s infinite alternate; }
 @keyframes flicker { to { transform: scale(1.12); } }
 .filmlantern { width: 44px; cursor: pointer; }
@@ -273,10 +273,11 @@ html, body {
 .cat.away { opacity: 0; transition: opacity .25s; }
 
 /* Naktis artėja: kas dieną miestelis tamsesnis ir mėlynesnis (--night 0..1 nustato app.js).
-   Tamsinami tik paveikslėliai (fonas, nameliai, eglutė, veikėjai), o žibintų šviesa ir šviesos ant sniego lieka ryškios. */
-#bg { filter: brightness(calc(1 - .45 * var(--night, 0))) saturate(calc(1 - .2 * var(--night, 0))); }
-#night { position: absolute; inset: 0; pointer-events: none; background: rgb(10, 20, 75); opacity: calc(.38 * var(--night, 0)); }
-#world .obj > .flip { filter: brightness(calc(1 - .4 * var(--night, 0))) saturate(calc(1 - .15 * var(--night, 0))); }
+   Be CSS filtrų: vienas pusiau permatomas sluoksnis #night virš miestelio, o žibintų šviesa (#lights) virš jo. */
+#night { position: absolute; inset: 0; pointer-events: none; background: rgb(8, 16, 58); opacity: calc(.55 * var(--night, 0)); }
+/* žibintų šviesa miestelyje lieka kaip buvo (priekiniai nameliai ją užstoja); #lights ją švelniai papildo tamsėjant */
+#lights { position: absolute; inset: 0; pointer-events: none; opacity: calc(.45 * var(--night, 0)); }
+#lights .light { pointer-events: none; }
 
 /* Stačias telefonas: prašome pasukti (gulsčiai visas miestelis telpa ekrane) */
 #rotate { display: none; }
@@ -286,3 +287,5 @@ html, body {
     font: 600 22px/1.3 Georgia, serif; text-align: center; padding: 30px; }
   #rotate span { font-size: 56px; }
 }
+
+.lengvas #lights { display: none; }
