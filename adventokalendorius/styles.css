@@ -257,3 +257,11 @@ html, body {
 .cat.sitting .rig.views .s-sit { opacity: 1; animation: spr .55s steps(12, jump-none) 1 both; }
 .cat.sitting.talking .rig.views .s-sit { opacity: 0; }
 .cat.sitting.talking .rig.views .s-talk { opacity: 1; animation: spr 1.5s steps(18, jump-none) infinite alternate; }
+
+/* Eisena iš vieno rato įrašo: lentelė 10x10, kadras 400x280 (platesnis už 330, todėl sluoksnis 21 % platesnis). Kadrą renka JS. */
+.rig.views .s-ring { left: -10.6%; right: -10.6%; background-size: 1000% 1000%; animation: none !important; transition: none !important; transform: none !important; }
+.cat.ring .rig.views .sprite { opacity: 0 !important; }
+.cat.ring:not(.sitting) .rig.views .s-ring { opacity: 1 !important; }
+.cat.ring.sitting .rig.views .s-sit { opacity: 1 !important; }
+.cat.ring.sitting.talking .rig.views .s-sit { opacity: 0 !important; }
+.cat.ring.sitting.talking .rig.views .s-talk { opacity: 1 !important; }
