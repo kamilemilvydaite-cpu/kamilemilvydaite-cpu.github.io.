@@ -291,12 +291,10 @@
       const l = obj("lantern", s.lantern.x, s.lantern.y, IMG.zibintas);
       l.insertAdjacentHTML("afterbegin", `<div class="glow"></div>`);
       lanterns[s.day] = l;
-      l._light = lightCopy("lantern", s.lantern.x, s.lantern.y, l);
     });
 
     filmLantern = obj("filmlantern", 1100, 290, IMG["zibintas-pasaka"]);
     filmLantern.insertAdjacentHTML("afterbegin", `<div class="glow"></div>`);
-    filmLantern._light = lightCopy("filmlantern", 1100, 290, filmLantern);
     filmLantern.addEventListener("pointerdown", openFilm);
 
     cat = obj("cat", ORBIT.x + ORBIT.rx, ORBIT.y, CAT.walk);
@@ -566,31 +564,15 @@
       houses[d].classList.toggle("done", opened.includes(d));
       houses[d].classList.toggle("today", d === t && !opened.includes(d));
     }
-    for (let d = 1; d <= 24; d++) if (d < t) lanterns[d].classList.add("on");
-    stage.style.setProperty("--night", (Math.max(0, t - 1) / 23).toFixed(3));   // kas dieną tamsiau: 1 d. 0, 24 d. 1
     filmLantern.classList.toggle("off", t < CFG.filmasNuoDienos);
-    syncLights();
     $("tday").textContent = t;
   }
 
   /* ---------- Eiga ---------- */
   let busy = false, catAt = 0;
-  // Dega šios dienos žibintas (kai katinas jį uždega) ir visų praėjusių dienų žibintai
-  function lightOnly(day) { const t = today(); for (let d = 1; d <= 24; d++) lanterns[d].classList.toggle("on", d === day || d < t); syncLights(); }
-  /* Žibintų šviesa (švytėjimas ir šviesa ant sniego) piešiama atskirame sluoksnyje #lights virš nakties sluoksnio #night,
-     kad naktį liktų šilta ir ryški. Be CSS filtrų: daug filtrų telefone ir lentoje sugadina vaizdą. */
-  function lightCopy(cls, x, y, src) {
-    const el = document.createElement("div");
-    el.className = "obj " + cls + " light";
-    el.innerHTML = `<div class="pool"></div><div class="glow"></div>`;
-    $("lights").appendChild(el); place(el, x, y);
-    requestAnimationFrame(function fix() { const h = src.offsetHeight; if (h) el.style.height = h + "px"; else requestAnimationFrame(fix); });
-    return el;
-  }
-  function syncLights() {
-    for (let d = 1; d <= 24; d++) lanterns[d]._light.classList.toggle("on", lanterns[d].classList.contains("on"));
-    filmLantern._light.classList.toggle("off", filmLantern.classList.contains("off"));
-  }
+  // Dega tik vienas žibintas: tos dienos, kurią katinas pasakė ar kurios namelis ką tik atidarytas
+  function lightOnly(day) { for (let d = 1; d <= 24; d++) lanterns[d].classList.toggle("on", d === day); }
+
 
   async function catAnnounce() {
     if (busy) return; busy = true;
@@ -729,7 +711,7 @@
     });
   }
   async function roomScene(day, base, juosta, F, doorX, doorY) {
-    const room = $("room"), re = $("relf"), rc = $("rcat"), zoom = [$("bg"), world, $("night"), $("lights")];
+    const room = $("room"), re = $("relf"), rc = $("rcat"), zoom = [$("bg"), world];
     room.style.backgroundImage = `url("${IMG["namelio-vidus"]}")`;
     roomVideoReady().then((ok) => { if (ok && IMG["namelio-vidus-video"]) room.style.backgroundImage = `url("${IMG["namelio-vidus-video"]}")`; });
     // 1. Priartėjame pro atviras duris

@@ -272,13 +272,6 @@ html, body {
 .cat { transition: opacity .5s; }
 .cat.away { opacity: 0; transition: opacity .25s; }
 
-/* Naktis artėja: kas dieną miestelis tamsesnis ir mėlynesnis (--night 0..1 nustato app.js).
-   Be CSS filtrų: vienas pusiau permatomas sluoksnis #night virš miestelio, o žibintų šviesa (#lights) virš jo. */
-#night { position: absolute; inset: 0; pointer-events: none; background: rgb(8, 16, 58); opacity: calc(.55 * var(--night, 0)); }
-/* žibintų šviesa miestelyje lieka kaip buvo (priekiniai nameliai ją užstoja); #lights ją švelniai papildo tamsėjant */
-#lights { position: absolute; inset: 0; pointer-events: none; opacity: calc(.45 * var(--night, 0)); }
-#lights .light { pointer-events: none; }
-
 /* Stačias telefonas: prašome pasukti (gulsčiai visas miestelis telpa ekrane) */
 #rotate { display: none; }
 @media (orientation: portrait) and (max-width: 820px) {
@@ -288,4 +281,3 @@ html, body {
   #rotate span { font-size: 56px; }
 }
 
-.lengvas #lights { display: none; }
