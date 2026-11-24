@@ -3,115 +3,35 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>AI VEIKIA — svetainės ir automatizacija smulkiam verslui</title>
+<title>AI VEIKIA — svetainės ir AI automatizacija smulkiam verslui</title>
 <meta name="description" content="Kuriu greitas svetaines ir automatizuoju kasdienius verslo darbus. Elektrėnai, dirbu su klientais visoje Lietuvoje.">
+<link rel="canonical" href="https://aiveikia.lt/">
+<meta name="theme-color" content="#141414">
+<link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kalam:wght@700&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
 <meta property="og:title" content="AI VEIKIA">
-<meta property="og:description" content="Svetainės ir automatizacija smulkiam verslui.">
+<meta property="og:description" content="Svetainės ir AI automatizacija smulkiam verslui.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='%2316a34a'/%3E%3C/svg%3E">
-<style>
-  :root {
-    --bg: #faf7f2;
-    --bg2: #f2ece2;
-    --ink: #1a1714;
-    --soft: #6b6157;
-    --line: #e2d9cc;
-    --accent: #16803c;
-    --accent-soft: #e6f2ea;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #14120f;
-      --bg2: #1c1915;
-      --ink: #f6f1e8;
-      --soft: #a89d90;
-      --line: #2e2922;
-      --accent: #4ade80;
-      --accent-soft: #19271d;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #14120f; --bg2: #1c1915; --ink: #f6f1e8; --soft: #a89d90;
-    --line: #2e2922; --accent: #4ade80; --accent-soft: #19271d;
-  }
-
-  * { box-sizing: border-box; }
-  html, body { margin: 0; }
-  body {
-    min-height: 100svh; background: var(--bg); color: var(--ink);
-    font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased;
-    display: flex; flex-direction: column;
-  }
-  body::before {
-    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
-    background: radial-gradient(60rem 36rem at 72% -10%, var(--bg2), transparent 70%);
-  }
-  .wrap {
-    position: relative; z-index: 1; width: 100%; max-width: 64rem;
-    margin: 0 auto; padding: 2.5rem 16px 3rem; flex: 1;
-    display: flex; flex-direction: column;
-  }
-
-  /* Ženklas su „veikia" lempute */
-  .brand { display: flex; align-items: center; gap: .6rem; font-weight: 700; letter-spacing: .14em; font-size: .82rem; }
-  .dot { width: .6rem; height: .6rem; border-radius: 50%; background: var(--accent); position: relative; flex: none; }
-  .dot::after {
-    content: ""; position: absolute; inset: 0; border-radius: 50%; background: var(--accent);
-    animation: pulse 2.6s ease-out infinite;
-  }
-  @keyframes pulse { 0% { transform: scale(1); opacity: .55; } 70%, 100% { transform: scale(3.2); opacity: 0; } }
-  @media (prefers-reduced-motion: reduce) { .dot::after { animation: none; } }
-
-  main { margin: auto 0; padding: 4rem 0 3rem; }
-  h1 {
-    font-size: clamp(2.3rem, 7.2vw, 4.4rem); line-height: 1.04; letter-spacing: -.035em;
-    font-weight: 700; margin: 0 0 1.4rem; max-width: 17ch;
-  }
-  h1 em { font-style: normal; color: var(--accent); }
-  .lead { font-size: clamp(1.05rem, 2.4vw, 1.3rem); color: var(--soft); max-width: 46ch; margin: 0; }
-
-  ul.srv { list-style: none; display: grid; gap: 1px; margin: 3.5rem 0 0; padding: 0; background: var(--line); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
-  @media (min-width: 46rem) { ul.srv { grid-template-columns: repeat(3, 1fr); } }
-  ul.srv li { background: var(--bg); padding: 1.5rem 0; }
-  @media (min-width: 46rem) { ul.srv li { padding: 1.6rem 1.6rem 1.6rem 0; } ul.srv li + li { padding-left: 1.6rem; } }
-  ul.srv b { display: block; font-size: 1.02rem; margin-bottom: .3rem; }
-  ul.srv span { color: var(--soft); font-size: .95rem; }
-
-  footer { position: relative; z-index: 1; border-top: 1px solid var(--line); }
-  .foot {
-    max-width: 64rem; margin: 0 auto; padding: 1.6rem 16px 2.2rem;
-    display: flex; flex-wrap: wrap; gap: .6rem 1.6rem; align-items: baseline;
-    color: var(--soft); font-size: .92rem;
-  }
-  .foot .status { display: inline-flex; align-items: center; gap: .5rem; color: var(--ink); font-weight: 600; }
-  .foot a { color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--accent); padding-bottom: 1px; }
-  .foot a:hover { color: var(--accent); }
-  .foot .sp { margin-left: auto; }
-</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"ProfessionalService","name":"AI VEIKIA","url":"https://aiveikia.lt/","email":"infoaiveikia@gmail.com","sameAs":["https://www.instagram.com/aiveikia/"],"description":"Svetainės ir AI automatizacija smulkiam verslui.","address":{"@type":"PostalAddress","addressLocality":"Elektrėnai","addressCountry":"LT"},"areaServed":{"@type":"Country","name":"Lietuva"}}
+</script>
+<script>try{if(sessionStorage.getItem('aiv-intro'))document.documentElement.classList.add('no-intro')}catch(e){}</script>
 </head>
 <body>
-<div class="wrap">
-  <div class="brand"><span class="dot"></span>AI VEIKIA</div>
-
-  <main>
-    <h1>Svetainės ir automatizacija <em>smulkiam verslui</em>.</h1>
-    <p class="lead">Sukuriu greitą, tvarkingą svetainę ir perduodu robotui tuos darbus, kuriuos šiandien darote ranka.</p>
-
-    <ul class="srv">
-      <li><b>Svetainės</b><span>Nuo vieno puslapio iki kelių skyrių. Greitos, tvarkingos telefone, tekstus galite keisti patys.</span></li>
-      <li><b>Automatizacija</b><span>Užklausos, lentelės, laiškai ir priminimai susijungia tarpusavyje ir veikia be jūsų.</span></li>
-      <li><b>AI sprendimai</b><span>Nedideli įrankiai kasdieniams darbams: turinys, atsakymai klientams, duomenų tvarkymas.</span></li>
-    </ul>
-  </main>
-</div>
-
-<footer>
-  <div class="foot">
-    <span class="status"><span class="dot"></span>Puslapis ruošiamas</span>
-    <span>Darbų pavyzdžiai netrukus. Rašykite: <a href="mailto:infoaiveikia@gmail.com">infoaiveikia@gmail.com</a></span>
-    <span class="sp">Elektrėnai, Lietuva</span>
-  </div>
-</footer>
+<main class="home-wrap">
+  <h1 class="home-logo"><img src="/assets/logo.svg" alt="AI VEIKIA" width="2140" height="1310"><span class="tag">Svetainės ir AI automatizacija smulkiam verslui</span></h1>
+  <nav aria-label="Pagrindinė navigacija"><ul class="home-notes">
+    <li><a class="note n-pink vt-ai" style="--r:-4deg" href="/ai-automatizacija/">AI automatizacija</a></li>
+    <li><a class="note n-orange vt-projects" style="--r:3deg" href="/atlikti-projektai/">Atlikti projektai</a></li>
+    <li><a class="note n-purple vt-anim" style="--r:-2deg" href="/animacija/">Animacija</a></li>
+    <li><a class="note n-green vt-uiux" style="--r:2.5deg" href="/ui-ux-dizainas/">UI/UX dizainas + svetainė</a></li>
+    <li><div class="note n-yellow vt-contact" style="--r:-3deg"><a class="note-title" href="/kontaktai/">Kontaktai</a><span class="icons"><a class="icon" href="https://www.instagram.com/aiveikia/" target="_blank" rel="noopener" aria-label="Instagram @aiveikia (atsidaro naujame lange)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" stroke="none"/></svg></a><button type="button" class="icon" data-copy="infoaiveikia@gmail.com" aria-describedby="home-copied" aria-label="Nukopijuoti el. paštą infoaiveikia@gmail.com"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3.5 6.5 12 13l8.5-6.5"/></svg></button></span><span class="copied" id="home-copied" role="status" aria-live="polite"></span></div></li>
+  </ul></nav>
+</main>
+<button type="button" class="skip">Praleisti</button>
+<script src="/assets/site.js" defer></script>
 </body>
 </html>
