@@ -621,7 +621,7 @@
   async function openDoor(day) {
     if (busy) return;
     const t = today(), h = houses[day], s = SPOTS[day - 1];
-    if (day > t) {
+    if (day !== t) {                       // atidaryti galima tik šiandienos namelį; būsimi ir praėję užrakinti
       sfx("uzrakinta"); h.classList.remove("locked-shake"); void h.offsetWidth; h.classList.add("locked-shake"); return;
     }
     busy = true;
