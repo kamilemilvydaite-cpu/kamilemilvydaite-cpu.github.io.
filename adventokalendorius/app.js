@@ -372,16 +372,17 @@
   let ringH = null;   // išlyginta ėjimo kryptis; null - naujo ėjimo pradžia
   function ringStep(dx, dy) {
     const now = performance.now(), dt = Math.min(60, ringLast ? now - ringLast : 16); ringLast = now;
-    const raw = Math.atan2(dy, dx) * 180 / Math.PI;
+    const raw = Math.atan2(dy, dx) * 180 / Math.PI, prevH = ringH;
     ringH = ringH === null ? raw : ringH + wrap180(raw - ringH) * (1 - Math.exp(-dt / 250));   // ~0,25 s išlyginimas
+    const turn = prevH === null ? 0 : wrap180(ringH - prevH) / dt * 1000;     // posūkio greitis, °/s (+ į dešinę)
     const H = ringH, e = ringErr(H, Math.floor(ringT));
     if (Math.abs(e) > 60) ringT = ringBest(H);                                   // labai staigus posūkis: iškart tinkamas kadras
-    else if (e > 10) ringT -= dt / 1000 * RING_FPS * Math.min(1.5, e / 25);      // posūkis į dešinę: įrašas trumpam atgal
+    else if (e > 10 && turn > 20) ringT -= dt / 1000 * RING_FPS * Math.min(1.5, e / 25);   // sukant į dešinę: įrašas trumpam atgal
     else {
       ringT += dt / 1000 * RING_FPS * Math.max(0.5, Math.min(1.8, 1 - e / 30));  // atsilieka - greičiau, pralenkia - lėčiau
       const j = Math.floor(ringT), e2 = ringErr(H, j);
       if (e2 > 8 && RING_LOOP[j % RING_N] >= 0) ringT = RING_LOOP[j % RING_N] + (ringT - j);   // kartojimas be šuolio
-      else if (e2 > 25) ringT = ringStart(H);                                               // įstrižai: atgal į atkarpos pradžią
+      else if (e2 > 15) ringT = ringStart(H);                                               // einant tiesiai be kartojimo taško: atgal į atkarpos pradžią
     }
     ringT = ((ringT % RING_N) + RING_N) % RING_N;
     ringFrame(Math.floor(ringT));
@@ -639,7 +640,6 @@
     sfx("durys"); h.classList.add("open");
     await sleep(1500);                           // durys atsidaro lėtai
     if (IMG["namelio-vidus"]) {                  // įeiname į namelį: užduotį elfas pasako viduje
-      cat.classList.add("away");                // kol skrendame į namelį ir atgal, katino prie durų nesimato
       await roomScene(day, base, juosta, F, doorX, doorY);
       h.classList.remove("open");
       if (!opened.includes(day)) { opened.push(day); saveOpened(); }
@@ -731,6 +731,7 @@
     room.hidden = false; void room.offsetWidth; room.classList.add("in");
     re.classList.add("out");
     await sleep(800);
+    cat.classList.add("away");                  // vidus jau uždengė ekraną: išskrendant katino prie durų nebus
     $("snow").style.visibility = "hidden";
     // 3. Sniegius ateina ir užšoka ant fotelio (1 klipas baigiasi katinu ant fotelio ir sustoja)
     if (hasVid) await playClip(v1); else await sleep(600);
