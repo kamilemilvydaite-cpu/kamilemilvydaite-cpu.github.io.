@@ -19,13 +19,11 @@
     stage.style.left = ((v ? v.pageLeft : 0) + w / 2) + "px";
     stage.style.top = ((v ? v.pageTop : 0) + h / 2) + "px";
     stage.style.transform = `translate(-50%, -50%) scale(${s})`;
-    // Platesniame ekrane (telefonas) šonuose rodomas veidrodžiu atspindėtas fonas, kad neliktų juostų
+    // Platesniame ekrane (telefonas) šonuose rodomas platus fonas (miškas tęsiasi už scenos kraštų), kad neliktų juostų
     const ext = $("ext"), wide = w / h > W / H + 0.01;
     document.body.classList.toggle("wide", wide);
     if (wide) {
       ext.style.left = stage.style.left; ext.style.top = stage.style.top; ext.style.transform = stage.style.transform;
-      const bgi = $("bg").style.backgroundImage;
-      if (bgi) ext.querySelectorAll("div").forEach((d) => { d.style.backgroundImage = bgi; });
     }
   }
   addEventListener("resize", fit);
@@ -275,7 +273,6 @@
 
   function buildWorld() {
     if (IMG.fonas) $("bg").style.backgroundImage = `url("${IMG.fonas}")`; else $("bg").innerHTML = phBackground();
-    fit();   // šoniniams atspindžiams reikia jau įkelto fono
 
     const tree = obj("tree", 978, 606, IMG.eglute);
     [[50, 30], [35, 48], [64, 52], [28, 68], [50, 72], [72, 70], [20, 86], [42, 88], [62, 86], [80, 88]].forEach(([l, t], i) => {

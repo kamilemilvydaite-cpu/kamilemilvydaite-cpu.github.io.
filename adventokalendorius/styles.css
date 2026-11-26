@@ -282,12 +282,11 @@ html, body {
 }
 
 
-/* Platus ekranas (telefonas gulsčiai): šonuose veidrodinis fonas, vinjetė tik viršuje ir apačioje, kad nesimatytų siūlės */
-#ext { display: none; position: absolute; width: 5760px; height: 1080px; transform-origin: center; pointer-events: none; transition: opacity .3s; }
+/* Platus ekranas (telefonas gulsčiai): po scena platus fonas 2560x1080 (miškas tęsiasi į šonus), vinjetė tik viršuje ir apačioje */
+#ext { display: none; position: absolute; width: 2560px; height: 1080px; transform-origin: center; pointer-events: none; transition: opacity .3s; }
 .wide #ext { display: block; }
-#ext .l, #ext .r { position: absolute; top: 0; width: 1920px; height: 1080px; background-size: 100% 100%; transform: scaleX(-1); }
-#ext .l { left: 0; } #ext .r { left: 3840px; }
-#ext .l::after, #ext .r::after, .wide #stage::after {
+#ext .w { position: absolute; inset: 0; background: url("assets/img/fonas-platus.webp") center / 100% 100%; }
+#ext .w::after, .wide #stage::after {
   content: ""; position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(to bottom, rgba(40,45,95,.3) 0%, rgba(40,45,95,0) 22%, rgba(40,45,95,0) 72%, rgba(40,45,95,.32) 100%);
 }
