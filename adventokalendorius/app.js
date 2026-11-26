@@ -29,10 +29,13 @@
   addEventListener("resize", fit);
   if (window.visualViewport) { visualViewport.addEventListener("resize", fit); visualViewport.addEventListener("scroll", fit); }
   fit();
-  // Pirmas palietimas bet kur įjungia viso ekrano režimą (išjungti galima mygtuku ⛶)
+  // Pirmas palietimas bet kur įjungia viso ekrano režimą ir pasuka gulsčiai (išjungti galima mygtuku ⛶)
   document.addEventListener("pointerdown", (e) => {
     if (e.target.id === "fs" || document.fullscreenElement || !document.documentElement.requestFullscreen) return;
-    document.documentElement.requestFullscreen().catch(() => {});
+    // viso ekrano režimas ir pasukimas gulsčiai (Android Chrome; iPhone to neleidžia, ten lieka prašymas pasukti)
+    document.documentElement.requestFullscreen({ navigationUI: "hide" })
+      .then(() => screen.orientation && screen.orientation.lock ? screen.orientation.lock("landscape") : null)
+      .catch(() => {});
   }, { once: true, capture: true });
   document.addEventListener("contextmenu", (e) => e.preventDefault());
 
